@@ -5,6 +5,7 @@
 
 import sys
 import os
+import argparse
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
@@ -12,18 +13,40 @@ from crawler.meme_crawler import MemeCrawler
 from crawler.exceptions import CrawlerException
 
 
+def parse_arguments():
+    """
+    Парсинг аргументов командной строки.
+    """
+    parser = argparse.ArgumentParser(
+        description='Meme Crawler - система для сбора мемов с сайта mempack.ru',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    parser.add_argument(
+        '-p', '--pages',
+        type=int,
+        default=50,
+        dest='max_pages',
+        help='Максимальное количество страниц для обхода (по умолчанию: 50)'
+    )
+
+    return parser.parse_args()
+
 def main():
     print("🎭 MemPack Crawler")
     print("=" * 50)
 
     try:
+        args = parse_arguments()
+        max_pages = args.max_pages
+
         crawler = MemeCrawler()
 
         print(f"🎯 Целевой сайт: {crawler.base_url}")
         print(f"💾 Папка для сохранения: {crawler.download_dir}")
         print("🔄 Запуск обхода...\n")
 
-        images = crawler.crawl(max_pages=50)
+        images = crawler.crawl(max_pages=max_pages)
 
         stats = crawler.get_stats()
 
